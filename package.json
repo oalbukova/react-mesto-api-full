@@ -1,23 +1,16 @@
 {
   "name": "express-mesto",
   "version": "1.0.0",
-  "description": "backend на Express.js",
+  "description": "Проект Mesto",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
     "lint": "eslint --fix --ext .js ."
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/oalbukova/express-mesto.git"
-  },
   "author": "Olga Albukova",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/oalbukova/express-mesto/issues"
-  },
-  "homepage": "https://github.com/oalbukova/express-mesto#readme",
+  "homepage": "https://github.com/oalbukova/express-mesto",
   "devDependencies": {
     "eslint": "^7.7.0",
     "eslint-config-airbnb-base": "^14.2.0",
@@ -35,7 +28,7 @@
     "express-winston": "^4.0.5",
     "helmet": "^4.1.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.2",
+    "mongoose": "^5.10.7",
     "validator": "^13.1.17",
     "winston": "^3.3.3"
   },

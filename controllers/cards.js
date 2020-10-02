@@ -3,15 +3,13 @@ const NotFoundError = require('../errors/not-found-err');
 const RequestError = require('../errors/request-err');
 const ForbiddenError = require('../errors/forbidden-err');
 
-const getAllCards = (req, res) => {
+const getAllCards = (req, res, next) => {
   Card.find({})
     .populate('user')
     .then((cards) => res.send({
       data: cards,
     }))
-    .catch(() => res.status(500).send({
-      message: 'На сервере произошла ошибка',
-    }));
+    .catch(next);
 };
 
 const createCard = (req, res, next) => {
@@ -28,9 +26,7 @@ const createCard = (req, res, next) => {
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new RequestError({
-          message: 'Указаны некорректные данные при создании карточки',
-        });
+        throw new RequestError('Указаны некорректные данные при создании карточки');
       }
     })
     .catch(next);
@@ -40,11 +36,11 @@ const findByIdAndRemoveCard = (req, res, next) => {
   Card.findById(req.params._id)
     .orFail()
     .catch(() => {
-      throw new NotFoundError({ message: 'Нет карточки с таким id' });
+      throw new NotFoundError('Нет карточки с таким id');
     })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError({ message: 'Недостаточно прав для выполнения операции' });
+        throw new ForbiddenError('Недостаточно прав для выполнения операции');
       }
       Card.findByIdAndDelete(req.params._id)
         .then((cardData) => {
@@ -73,12 +69,10 @@ const likeCard = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        throw new NotFoundError({ message: 'Нет карточки с таким id' });
+        throw new NotFoundError('Нет карточки с таким id');
       }
       if (err.name === 'ValidationError') {
-        throw new RequestError({
-          message: 'Указаны некорректные данные при создании карточки',
-        });
+        throw new RequestError('Указаны некорректные данные при создании карточки');
       }
     })
     .catch(next);
@@ -102,12 +96,12 @@ const dislikeCard = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.message === 'NotValidId') {
-        throw new NotFoundError({ message: 'Нет карточки с таким id' });
+        throw new NotFoundError('Нет карточки с таким id');
       }
       if (err.name === 'ValidationError') {
-        throw new RequestError({
-          message: 'Указаны некорректные данные при создании карточки',
-        });
+        throw new RequestError(
+          'Указаны некорректные данные при создании карточки',
+        );
       }
     })
     .catch(next);

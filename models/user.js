@@ -7,19 +7,19 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
       minlength: 2,
       maxlength: 30,
     },
     about: {
       type: String,
-      required: true,
+      required: false,
       minlength: 2,
       maxlength: 30,
     },
     avatar: {
       type: String,
-      required: true,
+      required: false,
       validate: {
         validator(link) {
           return validator.isURL(link);
@@ -55,9 +55,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
     .orFail(new AuthorizationError('Неправильные почта или пароль'))
     .then((user) => bcrypt.compare(password, user.password).then((matched) => {
       if (!matched) {
-        throw new AuthorizationError({
-          message: 'Неправильные почта или пароль',
-        });
+        throw new AuthorizationError('Неправильные почта или пароль');
       }
       return user; // теперь user доступен
     }));

@@ -6,12 +6,13 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const { errors } = require('celebrate');
-const { userRouter, cardRouter } = require('./routes/index.js');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/not-found-err');
 const { validateUser, validateLogin } = require('./middlewares/celebrateValidation');
+const cards = require('./routes/cards');
+const users = require('./routes/users');
 
 const app = express();
 
@@ -26,6 +27,7 @@ const limiter = rateLimit({
 });
 
 app.use(cookieParser());
+
 app.use(helmet());
 
 app.use(limiter);
@@ -50,12 +52,13 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signup/', validateUser, createUser);
-app.post('/signin/', validateLogin, login);
-app.use('/users/', auth, userRouter);
-app.use('/cards/', auth, cardRouter);
+app.post('/signin', validateLogin, login);
+app.post('/signup', validateUser, createUser);
+app.use(auth);
+app.use('/users', users);
+app.use('/cards', cards);
 app.use(() => {
-  throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
 
 app.use(errorLogger); // подключаем логгер ошибок
@@ -69,7 +72,7 @@ app.use((err, req, res, next) => {
   }
   res
     .status(500)
-    .send({ message: 'На сервере произошла ошибка' });
+    .send({ message: `На сервере произошла ошибка: ${err.message}` });
   next();
 });
 
